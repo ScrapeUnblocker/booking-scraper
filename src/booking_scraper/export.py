@@ -72,5 +72,7 @@ def write(items: Iterable[Any], path: str | Path, fmt: str | None = None) -> Pat
     text = render(list(items), format_for(path, fmt))
     # utf-8-sig so Excel opens CSVs with accented hotel names correctly.
     encoding = "utf-8-sig" if format_for(path, fmt) == "csv" else "utf-8"
-    path.write_text(text, encoding=encoding, newline="")
+    # Path.write_text only accepts newline= on Python 3.10+.
+    with path.open("w", encoding=encoding, newline="") as fh:
+        fh.write(text)
     return path
